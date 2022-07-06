@@ -23,24 +23,20 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - name: 拉取代码 
-        uses: actions/checkout@v3
+       - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
         with:
-          fetch-depth: 0
-
-      - name: 设置运行环境（Node.js)
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - name: 安装依赖
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
         run: npm install
-
-      - name: 构建项目
-        run: npm run build
-
-      - name: 部署到PAGES
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: git-config
+        run: git config --global user.email "you@example.com" && git config --global user.name "Your Name"
+      - name: Coverage
+        run: npm run test-cov
+        env:
+          CI: true
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
         with:
-          branch: start-hexo
-          folder: public/
+          github-token: ${{ secrets.github_token }}
